@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <title>Django Girls blog</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+        <link href='//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+        <footer class="footer">
+          <p>
+            Copyright 2016
+          </p>
+          <audio controls="controls" autobuffer="autobuffer" autoplay="autoplay">
+            {% if wav_file %}
+              <source src="{% static wav_file %}" type='audio/wav'>
+            {% endif %}
+          </audio>
+          <div></div>
+        </footer>
+    </body>
+</html>

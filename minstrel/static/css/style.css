@@ -1,0 +1,69 @@
+.progression-fields .form-group label.control-label {
+  display: none;
+}
+
+.progression-label {
+  text-align: right;
+  font-size: 20px;
+}
+
+.progression-title {
+  text-align: center;
+  font-size: 20px;
+}
+
+body {
+  background-color: #F3FFFD;
+}
+
+.form-control {
+  background-color: #FBFFFF;
+  border-radius: 0px;
+  border-color: #CFE2E2;
+  padding: 5px 2px;
+}
+
+legend {
+  margin-bottom: 10px;
+  border-bottom: 1px solid #9FDCD6;
+  color: #1CC3C5;
+}
+
+.whole .col-sm-6:first-of-type {
+  padding-left: 0px;
+}
+
+.whole .col-sm-6:last-of-type {
+  padding-right: 0px;
+}
+
+.form-group {
+  margin-bottom: 5px;
+}
+
+.progression-fields .form-control:not(:last-of-type) {
+  border-right: 0px;
+}
+
+.progression-fields:not(:last-of-type):not(:first-of-type) .form-control {
+  border-bottom: 0px;
+}
+
+.footer {
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-top: 10px;
+  background-color: #D7F7F7;
+  border-top: 1px solid #B6EFE4;
+  color: #107170;
+}
+
+.footer .container-fluid {
+  margin: 0px;
+}
+
+.footer p {
+  margin: 0px;
+}
