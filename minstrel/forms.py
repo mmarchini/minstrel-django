@@ -294,7 +294,8 @@ class MinstrelForm(forms.Form):
                 css_class='col-sm-12 whole',
             ),
             FormActions(
-                Submit('submit', 'Play'),
+                Submit('play', "Play", css_class="btn btn-success"),
+                Submit('random', 'Random', css_class="btn btn-info"),
                 css_class='col-sm-12',
             ),
         )

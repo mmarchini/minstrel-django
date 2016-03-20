@@ -5,6 +5,8 @@
 .progression-label {
   text-align: right;
   font-size: 20px;
+  font-size: 20px;
+  line-height: 25px;
 }
 
 .progression-title {
@@ -21,12 +23,18 @@ body {
   border-radius: 0px;
   border-color: #CFE2E2;
   padding: 5px 2px;
+  font-size: 10px;
+  height: 30px;
 }
 
 legend {
   margin-bottom: 10px;
   border-bottom: 1px solid #9FDCD6;
   color: #1CC3C5;
+}
+
+input, button, label, legend, h1, h2, h3, h4, h5, h6, select, option {
+  font-family: "Open Sans";
 }
 
 .whole .col-sm-6:first-of-type {
@@ -50,7 +58,7 @@ legend {
 }
 
 .footer {
-  height: 45px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -58,10 +66,19 @@ legend {
   background-color: #D7F7F7;
   border-top: 1px solid #B6EFE4;
   color: #107170;
+  position: fixed;
+  width: 100%;
+  bottom: 0px;
 }
 
-.footer .container-fluid {
-  margin: 0px;
+.container-fluid, .container {
+  margin-bottom: 90px;
+}
+
+.audio-player {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .footer p {

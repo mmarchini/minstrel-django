@@ -2,35 +2,52 @@
 import os
 import yaml
 import pickle
+import shutil
+from random import randint, randrange, choice, random
+from tempfile import NamedTemporaryFile
 from time import time
 
 from django.shortcuts import render
 
 from popgen.composition import DEFAULT_PARAMETERS
-from popgen import composition
+from popgen import composition, soundfonts
+from pydub import AudioSegment
 
-from .forms import MinstrelForm
+from .forms import MinstrelForm, keys, instruments
 from . import utils
 
 
-def yaml_to_wav(yaml_file):
+def shuffle(x):
+    return sorted(x, key=lambda k: random())
+
+
+def convert_to_mp3(session):
+    composition_path = session['composition.path']
+
+    current_path = os.path.join(composition_path, "%d" % time())
+    if not os.path.exists(current_path):
+        os.makedirs(current_path)
+    yaml_file = os.path.join(current_path, 'params.yaml')
+    shutil.copy(session['composition.params'], yaml_file)
+
     composer = composition.Composer.from_yaml(yaml_file)
     composer.compose()
-
-    midi_file = '/tmp/teste.midi'
-    wave_path = 'minstrel/static/tmp/'
-    if not os.path.exists(wave_path):
-        os.makedirs(wave_path)
-    wave_file = os.path.join(wave_path, "%d.wav" % time())
-
+    midi_file = os.path.join(current_path, 'minstrel.midi')
     composer.save(midi_file)
-    utils.play(midi_file, 'arachno.sf2', wave_file)
 
-    return 'tmp/%s' % os.path.basename(wave_file)
+    audio_filename = "minstrel.mp3"
+    audio_file = os.path.join(current_path, audio_filename)
+
+    with NamedTemporaryFile(suffix='.wav') as wav_file:
+        utils.play(midi_file, soundfonts.DEFAULT_SOUNDFONT, wav_file.name)
+        audio_file = audio_file
+        with open(audio_file, 'w+') as audio_file_:
+            AudioSegment.from_wav(wav_file).export(audio_file_, format="mp3")
+
+    return audio_file.replace('minstrel/static/', '')  # TODO find a better way
 
 
-def save_yaml(form, yaml_file):
-    data = form.cleaned_data
+def save_yaml(data, yaml_file):
 
     params = {}
     # Tempo
@@ -85,12 +102,12 @@ def save_yaml(form, yaml_file):
 
 def load_yaml(filename):
     params = DEFAULT_PARAMETERS.copy()
-    with open(filename) as file_:
+    with open(filename, 'r') as file_:
         params.update(yaml.load(file_))
     conv_params = {
         'tempo_lower': params['tempo']['lower'],
         'tempo_upper': params['tempo']['upper'],
-        'tempo_fixed': params['tempo']['fixed'],
+        'tempo_fixed': params['tempo'].get('fixed', None),
         'key': params['key'],
         'melody_power': params['melody']['power'],
         'melody_preferred_center':
@@ -124,19 +141,76 @@ def load_yaml(filename):
     return conv_params
 
 
+def get_yaml_file(session):
+    session_path = 'minstrel/static/tmp/%d' % time()
+    session_path = session.get('composition.path', session_path)
+    if not os.path.exists(session_path):
+        os.makedirs(session_path)
+        session['composition.path'] = session_path
+
+    yaml_file = os.path.join(session_path, 'current_params.yaml')
+    if not os.path.exists(session.get('composition.params', yaml_file)):
+        with open(yaml_file, 'w+') as file_:
+            params = DEFAULT_PARAMETERS.copy()
+            yaml.safe_dump(params, file_, default_flow_style=False)
+            session['composition.params'] = yaml_file
+
+    return session['composition.params']
+
+
+def random_params():
+    params = DEFAULT_PARAMETERS.copy()
+    tempo_lower = randint(40, 120)
+    conv_params = {
+        'tempo_lower': tempo_lower,
+        'tempo_upper': tempo_lower + randint(1, 120),
+        'key': choice(keys)[0],
+        'melody_power': randrange(50, 500, 25) / 100.,
+        'melody_preferred_center': randint(2, 4),
+        'melody_preferred_lower': randint(2, 8),
+        'melody_preferred_upper': randint(2, 8),
+        'melody_maximum_lower': randint(1, 6),
+        'melody_maximum_upper': randint(1, 6),
+        'melody_inner_drop_off': randrange(1, 200, 1) / 100.,
+        'melody_outer_drop_off': randrange(1, 200, 1) / 100.,
+        'instruments_melody': choice(instruments)[0],
+        'instruments_chord': choice(instruments)[0],
+        'instruments_bass': choice(instruments)[0],
+    }
+    prog = ['I', 'II', 'III', 'IV', 'V', 'VI']
+    for a, p in enumerate(prog):
+        for i in range(len(params['harmony']['markov_chain'][a])):
+            value = randrange(1, 60, 1)
+            conv_params['harmony_markov_chain_%s_%s' % (p, i)] = value
+
+    for a, p in enumerate(prog):
+        for i in range(len(params['melody']['harmonic_compilance'][a])):
+            value = randrange(1, 99, 7) / 100.
+            conv_params['melody_harmonic_compilance_%s_%s' % (p, i)] = value
+
+    for i in range(len(params['melody']['dynamics'])):
+        value = randrange(1, 12)
+        conv_params['melody_dynamics_%s' % i] = value
+
+    return conv_params
+
+
 def index(request):
-    wav_file = None
-    yaml_file = 'lala.yaml'
+    audio_file = None
+    yaml_file = get_yaml_file(request.session)
     if request.method == "POST":
-        print 'a'
-        form = MinstrelForm(request.POST)
+        if 'play' in request.POST:
+            form = MinstrelForm(request.POST)
+        elif 'random' in request.POST:
+            form = MinstrelForm(random_params())
+
         if form.is_valid():
-            save_yaml(form, yaml_file)
-            wav_file = yaml_to_wav(yaml_file)
+            save_yaml(form.cleaned_data, yaml_file)
+            audio_file = convert_to_mp3(request.session)
     else:
         form = MinstrelForm(load_yaml(yaml_file))
 
     return render(request, 'minstrel/index.html', {
         'forms': [form],
-        'wav_file': wav_file
+        'audio_file': audio_file
     })
