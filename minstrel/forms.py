@@ -113,8 +113,9 @@ def ProgressionFields(title, field, count):
         css_class='row progression-fields',
     )
 
-keys = keys.major_keys + keys.minor_keys
-keys = zip(keys, keys)
+# TODO fix bemol
+keys = [(key, key) for key in (keys.major_keys + keys.minor_keys)
+        if not key.endswith('b')]
 instruments = zip(MidiInstrument.names, MidiInstrument.names)
 
 
@@ -296,6 +297,10 @@ class MinstrelForm(forms.Form):
             FormActions(
                 Submit('play', "Play", css_class="btn btn-success"),
                 Submit('random', 'Random', css_class="btn btn-info"),
+                Submit('happy', 'Happy', css_class="btn btn-success"),
+                Submit('angry', 'Angry', css_class="btn btn-danger"),
+                Submit('sad', 'Sad', css_class="btn btn-primary"),
+                Submit('tender', 'Tender', css_class="btn btn-warning"),
                 css_class='col-sm-12',
             ),
         )

@@ -13,7 +13,8 @@ from popgen.composition import DEFAULT_PARAMETERS
 from popgen import composition, soundfonts
 from pydub import AudioSegment
 
-from .forms import MinstrelForm, keys, instruments
+from .forms import MinstrelForm, keys
+from .instruments import INSTRUMENTS
 from . import utils
 
 
@@ -161,6 +162,7 @@ def get_yaml_file(session):
 def random_params():
     params = DEFAULT_PARAMETERS.copy()
     tempo_lower = randint(40, 120)
+    instruments = choice(INSTRUMENTS)
     conv_params = {
         'tempo_lower': tempo_lower,
         'tempo_upper': tempo_lower + randint(1, 120),
@@ -173,9 +175,9 @@ def random_params():
         'melody_maximum_upper': randint(1, 6),
         'melody_inner_drop_off': randrange(1, 200, 1) / 100.,
         'melody_outer_drop_off': randrange(1, 200, 1) / 100.,
-        'instruments_melody': choice(instruments)[0],
-        'instruments_chord': choice(instruments)[0],
-        'instruments_bass': choice(instruments)[0],
+        'instruments_melody': instruments['melody'],
+        'instruments_chord': instruments['chord'],
+        'instruments_bass': instruments['bass'],
     }
     prog = ['I', 'II', 'III', 'IV', 'V', 'VI']
     for a, p in enumerate(prog):
@@ -195,6 +197,102 @@ def random_params():
     return conv_params
 
 
+def happy_params():
+    # +10 bpm
+    # Major
+    # +5dB
+    # +4 semitons
+    tempo_lower = randint(90, 120)
+    conv_params = random_params()
+    conv_params.update({
+        'tempo_lower': tempo_lower,
+        'tempo_upper': tempo_lower + randint(30, 60),
+        'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
+        'melody_preferred_center': 4,
+        'melody_preferred_lower': randint(2, 4),
+        'melody_preferred_upper': randint(4, 8),
+        'melody_maximum_lower': randint(1, 3),
+        'melody_maximum_upper': randint(2, 4),
+    })
+    for i in range(16):
+        value = randrange(5, 14)
+        conv_params['melody_dynamics_%s' % i] = value
+
+    return conv_params
+
+
+def angry_params():
+    # 10+ bpm
+    # Minor
+    # +7dB
+    # +0 semitons
+    tempo_lower = randint(90, 120)
+    conv_params = random_params()
+    conv_params.update({
+        'tempo_lower': tempo_lower,
+        'tempo_upper': tempo_lower + randint(30, 60),
+        'key': choice(['c', 'c#', 'd', 'd#', 'e'])[0],
+        'melody_preferred_center': 4,
+        'melody_preferred_lower': randint(2, 5),
+        'melody_preferred_upper': randint(2, 5),
+        'melody_maximum_lower': randint(1, 3),
+        'melody_maximum_upper': randint(1, 3),
+    })
+    for i in range(16):
+        value = randrange(8, 17)
+        conv_params['melody_dynamics_%s' % i] = value
+
+    return conv_params
+
+
+def sad_params():
+    # -15 bpm
+    # Minor
+    # -5dB
+    # -4 semitons
+    tempo_lower = randint(60, 90)
+    conv_params = random_params()
+    conv_params.update({
+        'tempo_lower': tempo_lower,
+        'tempo_upper': tempo_lower + randint(10, 30),
+        'key': choice(['e', 'f', 'g', 'a', 'b'])[0],
+        'melody_preferred_center': 3,
+        'melody_preferred_lower': randint(4, 8),
+        'melody_preferred_upper': randint(2, 4),
+        'melody_maximum_lower': randint(2, 4),
+        'melody_maximum_upper': randint(1, 3),
+    })
+    for i in range(16):
+        value = randrange(4, 9)
+        conv_params['melody_dynamics_%s' % i] = value
+
+    return conv_params
+
+
+def tender_params():
+    # +10 bpm
+    # Major
+    # +5dB
+    # +4 semitons
+    tempo_lower = randint(60, 80)
+    conv_params = random_params()
+    conv_params.update({
+        'tempo_lower': tempo_lower,
+        'tempo_upper': tempo_lower + randint(10, 20),
+        'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
+        'melody_preferred_center': 4,
+        'melody_preferred_lower': randint(2, 4),
+        'melody_preferred_upper': randint(4, 8),
+        'melody_maximum_lower': randint(1, 3),
+        'melody_maximum_upper': randint(2, 4),
+    })
+    for i in range(16):
+        value = randrange(1, 7)
+        conv_params['melody_dynamics_%s' % i] = value
+
+    return conv_params
+
+
 def index(request):
     audio_file = None
     yaml_file = get_yaml_file(request.session)
@@ -203,6 +301,14 @@ def index(request):
             form = MinstrelForm(request.POST)
         elif 'random' in request.POST:
             form = MinstrelForm(random_params())
+        elif 'happy' in request.POST:
+            form = MinstrelForm(happy_params())
+        elif 'angry' in request.POST:
+            form = MinstrelForm(angry_params())
+        elif 'sad' in request.POST:
+            form = MinstrelForm(sad_params())
+        elif 'tender' in request.POST:
+            form = MinstrelForm(tender_params())
 
         if form.is_valid():
             save_yaml(form.cleaned_data, yaml_file)
