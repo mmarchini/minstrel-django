@@ -1,0 +1,45 @@
+Avpy==0.1.2
+Django==1.9
+PySoundFile==0.8.1
+PyYAML==3.11
+SQLAlchemy==1.0.12
+argparse==1.2.1
+arrow==0.7.0
+backports-abc==0.4
+backports.ssl-match-hostname==3.5.0.1
+blessed==1.14.1
+certifi==2016.2.28
+cffi==1.5.2
+coverage==4.0
+decorator==4.0.9
+django-crispy-forms==1.6.0
+django-picklefield==0.3.2
+django-q==0.7.16
+fake-factory==0.5.7
+future==0.15.2
+ipaddress==1.0.16
+ipython==4.1.2
+ipython-genutils==0.1.0
+m3-cdecimal==2.3
+-e git+git@github.com:mmarchini/python-mingus@786e137534a2aeb7753d58e5fd85483211ca1a6e#egg=mingus-origin/master_modified
+-e git+git@github.com:mmarchini/ministrel@d02067a93e2cd51dd9d84b089a791b8902d50ccf#egg=ministrel-master
+mixer==5.5.5
+nose==1.3.7
+numpy==1.9.2
+path.py==8.1.2
+pexpect==4.0.1
+pickleshare==0.6
+-e git+git@github.com:mmarchini/popgen@8c8bca68b365e9cf6c90e27d652e438f3ec85155#egg=popgen-master
+psycopg2==2.6.1
+ptyprocess==0.5.1
+pycparser==2.14
+pydub==0.16.3
+python-dateutil==2.5.1
+scipy==0.16.0
+simplegeneric==0.8.1
+singledispatch==3.4.0.3
+six==1.10.0
+tornado==4.3
+traitlets==4.2.1
+wcwidth==0.1.6
+wsgiref==0.1.2
