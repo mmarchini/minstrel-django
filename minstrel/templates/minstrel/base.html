@@ -19,18 +19,19 @@
         </div>
         <footer class="footer">
           <div class="audio-player">
-            <audio controls="controls" autobuffer="autobuffer" autoplay="autoplay">
-              {% if audio_file %}
-                <source src="{% static audio_file %}" type='audio/mp3'>
-              {% endif %}
-            </audio>
-            <span class='text-center'>
-              {% if audio_file %}
-              <a href="{% static audio_file %}" download='Minstrel.mp3'>Download it!</a>
-              {% else %}
+            {% if audio_file %}
+              <audio controls="controls" autobuffer="autobuffer" autoplay="autoplay">
+                  {# <source src="{% static audio_file %}" type='audio/mp3'>#}
+                  <source src="{% static audio_file %}" type='audio/wav'>
+              </audio>
+              <span class='text-center'>
+                <a href="{% static audio_file %}" download='Minstrel.mp3'>Download it!</a>
+              </span>
+            {% else %}
+              <span class='text-center'>
               Click Play or Random to create a song!
-              {% endif %}
-            </span>
+              </span>
+            {% endif %}
           </div>
         </footer>
     </body>

@@ -3,11 +3,16 @@ import os
 import yaml
 import pickle
 import shutil
+import wave
+from glob import glob
 from random import randint, randrange, choice, random
 from tempfile import NamedTemporaryFile
-from time import time
+from time import time, sleep
 
+from django.http import StreamingHttpResponse
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
+from django_q.tasks import async
 
 from popgen.composition import DEFAULT_PARAMETERS
 from popgen import composition, soundfonts
@@ -22,30 +27,43 @@ def shuffle(x):
     return sorted(x, key=lambda k: random())
 
 
-def convert_to_mp3(session):
+def compose_task(composition_path, composition_id):
+    print "Yay"
+    current_path = os.path.join(composition_path, "%d" % composition_id)
+    yaml_file = os.path.join(current_path, 'params.yaml')
+    midi_file = os.path.join(current_path, 'minstrel.midi')
+    wav_file = os.path.join(current_path, 'minstrel.wav')
+    print 'compose_task', wav_file
+    with NamedTemporaryFile(suffix='.run', dir=current_path):
+        composer = composition.Composer.from_yaml(yaml_file)
+        composer.compose()
+        composer.save(midi_file)
+
+        utils.play(midi_file, soundfonts.DEFAULT_SOUNDFONT, wav_file)
+        print "Done!"
+        # with open(audio_file, 'w+') as audio_file_:
+        #     AudioSegment.from_wav(wav_file).export(audio_file_, format="mp3")
+
+
+def compose(session):
     composition_path = session['composition.path']
 
-    current_path = os.path.join(composition_path, "%d" % time())
+    current_time = int(time())
+    current_path = os.path.join(composition_path, "%d" % current_time)
     if not os.path.exists(current_path):
         os.makedirs(current_path)
     yaml_file = os.path.join(current_path, 'params.yaml')
     shutil.copy(session['composition.params'], yaml_file)
+    compose_task_id = async(compose_task, composition_path, current_time)
+    print compose_task_id
 
-    composer = composition.Composer.from_yaml(yaml_file)
-    composer.compose()
-    midi_file = os.path.join(current_path, 'minstrel.midi')
-    composer.save(midi_file)
-
-    audio_filename = "minstrel.mp3"
-    audio_file = os.path.join(current_path, audio_filename)
-
-    with NamedTemporaryFile(suffix='.wav') as wav_file:
-        utils.play(midi_file, soundfonts.DEFAULT_SOUNDFONT, wav_file.name)
-        audio_file = audio_file
-        with open(audio_file, 'w+') as audio_file_:
-            AudioSegment.from_wav(wav_file).export(audio_file_, format="mp3")
-
-    return audio_file.replace('minstrel/static/', '')  # TODO find a better way
+    return reverse(
+        'music',
+        kwargs=dict(
+            session_id=session['composition.identifier'],
+            composition_id=current_time
+        )
+    )
 
 
 def save_yaml(data, yaml_file):
@@ -143,11 +161,13 @@ def load_yaml(filename):
 
 
 def get_yaml_file(session):
-    session_path = 'minstrel/static/tmp/%d' % time()
+    current_time = time()
+    session_path = 'minstrel/static/tmp/%d' % current_time
     session_path = session.get('composition.path', session_path)
     if not os.path.exists(session_path):
         os.makedirs(session_path)
         session['composition.path'] = session_path
+        session['composition.identifier'] = int(current_time)
 
     yaml_file = os.path.join(session_path, 'current_params.yaml')
     if not os.path.exists(session.get('composition.params', yaml_file)):
@@ -312,7 +332,7 @@ def index(request):
 
         if form.is_valid():
             save_yaml(form.cleaned_data, yaml_file)
-            audio_file = convert_to_mp3(request.session)
+            audio_file = compose(request.session)
     else:
         form = MinstrelForm(load_yaml(yaml_file))
 
@@ -320,3 +340,41 @@ def index(request):
         'forms': [form],
         'audio_file': audio_file
     })
+
+
+def stream_music(session_id, composition_id):
+    current_path = "minstrel/static/tmp/%d/%d" % (session_id, composition_id)
+    audio_file = os.path.join(current_path, 'minstrel.wav')
+    audio_file = audio_file
+    running = glob(os.path.join(current_path, "*.run")).pop()
+    print 'stream_music', audio_file
+    while not os.path.exists(audio_file):
+        sleep(1)
+    with wave.open(audio_file, 'rb') as audio_file_:
+        frames_to_read = 128
+        chunk = audio_file_.read(frames_to_read)
+        print len(chunk)
+        # while chunk or os.path.exists(running):
+        #     yield chunk
+        #     chunk = audio_file_.read(frames_to_read)
+        while chunk or os.path.exists(running):
+            with NamedTemporaryFile(mode='rw+b', suffix='.wav') as wav_file:
+                w = wave.open(wav_file).writeframes(chunk)
+                w.setnchannels(audio_file_.getnchannels())
+                w.setsampwidth(audio_file_.getsampwidth())
+                w.setframerate(audio_file_.getframerate())
+                w.setcomptype(audio_file_.getcomptype(), audio_file_.getcompname())
+                w.writeframes(chunk)
+                w.close()
+                wav_segment = AudioSegment.from_wav(wav_file.name)
+                with NamedTemporaryFile(mode='rw+b', suffix='.mp3') as mp3_file:
+                    wav_segment.export(mp3_file, format="mp3")
+                    yield mp3_file.read()
+            chunk = audio_file_.read(frames_to_read)
+    print "Done!"
+
+
+def music(request, session_id, composition_id):
+    session_id = int(session_id)
+    composition_id = int(composition_id)
+    return StreamingHttpResponse(stream_music(session_id, composition_id))

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'minstrel',
     'crispy_forms',
+    'django_q',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -103,7 +104,15 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+Q_CLUSTER = {
+    'name': 'DjangORM',
+    'workers': 4,
+    'timeout': 90,
+    'retry': 120,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default'
+}
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
