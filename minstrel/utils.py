@@ -1,10 +1,12 @@
 import hashlib
+import os
+import fcntl
 import subprocess as sp
 from datetime import datetime
 from ctypes import c_int16, c_void_p, c_int, c_char_p, POINTER, byref, cast
 
 import soundfile
-from numpy import array
+from numpy import array, int16
 from mingus.midi.pyfluidsynth import cfunc
 from mingus.midi.pyfluidsynth import new_fluid_settings, fluid_settings_setstr
 from mingus.midi.pyfluidsynth import fluid_synth_sfload, fluid_settings_setint
@@ -88,7 +90,7 @@ fluid_settings_getint = cfunc('fluid_settings_getint', c_int,
 # Two buffers = left and right
 
 
-FFMPEG_BIN = "/usr/bin/ffmpeg"
+FFMPEG_BIN = "/usr/bin/avconv"
 
 
 def motherfucker(settings, synth, player):
@@ -97,29 +99,36 @@ def motherfucker(settings, synth, player):
     fluid_settings_getint(settings, 'audio.period-size', byref(period_size))
     period_size = period_size.value
     proc = sp.Popen([FFMPEG_BIN, '-y', "-f", 's16le', '-ar', "44100",
-                     '-ac', '2', '-i', '-', '-vn',
-                     'my_awesome_output_audio_file.mp3'],
+                     '-ac', '2', '-i', '-', '-vn', '-f', 'mp3', '-ac', '2',
+                     'pipe:1'],
                     stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
-
+    fcntl.fcntl(proc.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
     buff = (c_int16 * (period_size * 2))()
     while (fluid_player_get_status(player) == FLUID_PLAYER_PLAYING):
         r = fluid_synth_write_s16(
             synth,
             period_size,
-            cast(buff, c_void_p),
+            cast(buff, POINTER(c_int16)),
             0,
             2,
-            cast(buff, c_void_p),
+            cast(buff, POINTER(c_int16)),
             1,
             2
         )
-        # soundfile.write(proc.stdin, array(list(buff)), period_size, 'FLOAT', format='RAW')
         proc.stdin.write(buff)
+        try:
+            yield proc.stdout.read()
+        except IOError:
+            pass
         if (r != 0):
             print("Oh, that's embarassing...")
             break
-    proc.terminate()
-    print("Good!")
+    proc.stdin.close()
+    while proc.poll():
+        try:
+            yield proc.stdout.read()
+        except IOError:
+            pass
 
 
 def fast_render_loop(settings, synth, player):
@@ -177,11 +186,13 @@ def stream(midifile, sffile):
     fluid_player_add(player, midifile)
     fluid_player_play(player)
 
-    motherfucker(settings, synth, player)
+    for piece in motherfucker(settings, synth, player):
+        yield piece
 
     delete_fluid_player(player)
     delete_fluid_synth(synth)
     delete_fluid_settings(settings)
+    print "Streamed"
 
 
 def get_hash():
