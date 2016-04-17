@@ -6,7 +6,7 @@ import shutil
 from random import randint, randrange, choice, random
 from time import time
 
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, JsonResponse
 from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
@@ -199,7 +199,7 @@ def happy_params():
     # +5dB
     # +4 semitons
     tempo_lower = randint(90, 120)
-    conv_params = random_params()
+    conv_params = DEFAULT_PARAMETERS.copy()
     conv_params.update({
         'tempo_lower': tempo_lower,
         'tempo_upper': tempo_lower + randint(30, 60),
@@ -223,7 +223,7 @@ def angry_params():
     # +7dB
     # +0 semitons
     tempo_lower = randint(90, 120)
-    conv_params = random_params()
+    conv_params = DEFAULT_PARAMETERS.copy()
     conv_params.update({
         'tempo_lower': tempo_lower,
         'tempo_upper': tempo_lower + randint(30, 60),
@@ -247,7 +247,7 @@ def sad_params():
     # -5dB
     # -4 semitons
     tempo_lower = randint(60, 90)
-    conv_params = random_params()
+    conv_params = DEFAULT_PARAMETERS.copy()
     conv_params.update({
         'tempo_lower': tempo_lower,
         'tempo_upper': tempo_lower + randint(10, 30),
@@ -271,7 +271,7 @@ def tender_params():
     # +5dB
     # +4 semitons
     tempo_lower = randint(60, 80)
-    conv_params = random_params()
+    conv_params = DEFAULT_PARAMETERS.copy()
     conv_params.update({
         'tempo_lower': tempo_lower,
         'tempo_upper': tempo_lower + randint(10, 20),
@@ -340,3 +340,32 @@ def music(request, session_id, composition_id):
     session_id = int(session_id)
     composition_id = int(composition_id)
     return StreamingHttpResponse(stream_music(session_id, composition_id))
+
+
+def new_compose(request):
+    audio_file = None
+    yaml_file = get_yaml_file(request.session)
+
+    if request.method == "POST":
+        mood = request.POST.get('mood')
+        form = MinstrelForm(
+            {
+                'happy': happy_params(),
+                'angry': angry_params(),
+                'sad': sad_params(),
+                'tender': tender_params(),
+            }.get(mood, {})
+        )
+
+        if form.is_valid():
+            save_yaml(form.cleaned_data, yaml_file)
+            audio_file = compose(request.session)
+
+    return JsonResponse({
+        'music_url': audio_file
+    })
+
+
+def new_screen(request):
+
+    return render(request, 'minstrel/new_screen.html')

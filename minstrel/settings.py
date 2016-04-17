@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'minstrel',
     'crispy_forms',
     'django_q',
+    'djng',
+    'static_precompiler',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -132,3 +134,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # other finders..
+    'static_precompiler.finders.StaticPrecompilerFinder',
+)
