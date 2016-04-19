@@ -277,7 +277,7 @@ def sad_params():
         'key': choice(['e', 'f', 'g', 'a', 'b'])[0],
         'melody': {
             'preferred_range': {
-                'center': 3,
+                'center': 4,
                 'lower_offset': randint(4, 8),
                 'upper_offset': randint(2, 4),
             },
@@ -400,7 +400,6 @@ def new_compose(request):
         data['instruments'].update(INSTRUMENTS_GROUPS.get(instrument))
 
         if data:
-            from pprint import pprint; pprint(data)
             save_yaml(data, yaml_file)
             audio_file = compose(request.session)
             print "hue2"
