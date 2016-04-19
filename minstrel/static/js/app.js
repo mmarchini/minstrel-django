@@ -22,7 +22,12 @@ App.directive('imageRadioList', function(){
   }
 });
 
-App.controller('MinstrelCtrl', function($scope) {
+App.config(['$httpProvider', function($httpProvider) {
+  $httpProvider.defaults.xsrfCookieName = 'csrftoken';
+  $httpProvider.defaults.xsrfHeaderName = 'X-CSRFToken';
+}]);
+
+App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
   var params = {
     'instrument': null,
     'mood': null,
@@ -31,18 +36,31 @@ App.controller('MinstrelCtrl', function($scope) {
   }
   $scope.params = params;
   $scope.validate = false;
-  function _checkParams() {
-    return ;
-  }
   function checkParams() {
     if(!$scope.validate) {
       return true;
     }
     return  params.instrument && params.mood && params.complexity && params.length;
   }
+  var audio = null;
   $scope.checkParams = checkParams;
   $scope.clickCompose = function() {
     $scope.validate = true;
+    if(checkParams()) {
+      $http.post('/new_compose/', params).
+        success(function(data, status, headers, config){
+          var url=data.music_url;
+          console.log(url);
+          if (url) {
+            if(audio) {
+              audio.stop();
+              audio = null;
+            }
+            audio = ngAudio.load(url)
+            audio.play();
+          }
+        });
+    }
     // return checkParams();
   }
 

@@ -1,6 +1,7 @@
 
 import os
 import yaml
+import json
 import pickle
 import shutil
 from random import randint, randrange, choice, random
@@ -12,9 +13,10 @@ from django.shortcuts import render
 
 from popgen.composition import DEFAULT_PARAMETERS
 from popgen import composition, soundfonts
+from popgen.utils import recursive_update_dict
 
 from .forms import MinstrelForm, keys
-from .instruments import INSTRUMENTS
+from .instruments import INSTRUMENTS, INSTRUMENTS_GROUPS
 from . import utils
 
 
@@ -42,8 +44,7 @@ def compose(session):
     )
 
 
-def save_yaml(data, yaml_file):
-
+def load_form_data(data):
     params = {}
     # Tempo
     params['tempo'] = {
@@ -91,8 +92,12 @@ def save_yaml(data, yaml_file):
         bass=data['instruments_bass']
     )
 
+    return params
+
+
+def save_yaml(data, yaml_file):
     with open(yaml_file, 'w') as file_:
-        yaml.safe_dump(params, file_, default_flow_style=False)
+        yaml.safe_dump(data, file_, default_flow_style=False)
 
 
 def load_yaml(filename):
@@ -200,19 +205,27 @@ def happy_params():
     # +4 semitons
     tempo_lower = randint(90, 120)
     conv_params = DEFAULT_PARAMETERS.copy()
-    conv_params.update({
-        'tempo_lower': tempo_lower,
-        'tempo_upper': tempo_lower + randint(30, 60),
+    recursive_update_dict(conv_params, {
+        'tempo': {
+            'lower': tempo_lower,
+            'upper': tempo_lower + randint(30, 60),
+        },
         'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
-        'melody_preferred_center': 4,
-        'melody_preferred_lower': randint(2, 4),
-        'melody_preferred_upper': randint(4, 8),
-        'melody_maximum_lower': randint(1, 3),
-        'melody_maximum_upper': randint(2, 4),
+        'melody': {
+            'preferred_range': {
+                'center': 4,
+                'upper_offset': randint(4, 8),
+                'lower_offset': randint(2, 4),
+            },
+            'maximum_range': {
+                'upper_offset': randint(2, 4),
+                'lower_offset': randint(1, 3),
+            },
+        },
     })
     for i in range(16):
         value = randrange(5, 14)
-        conv_params['melody_dynamics_%s' % i] = value
+        conv_params['melody']['dynamics'][i] = value
 
     return conv_params
 
@@ -224,19 +237,27 @@ def angry_params():
     # +0 semitons
     tempo_lower = randint(90, 120)
     conv_params = DEFAULT_PARAMETERS.copy()
-    conv_params.update({
-        'tempo_lower': tempo_lower,
-        'tempo_upper': tempo_lower + randint(30, 60),
+    recursive_update_dict(conv_params, {
+        'tempo': {
+            'lower': tempo_lower,
+            'upper': tempo_lower + randint(30, 60),
+        },
         'key': choice(['c', 'c#', 'd', 'd#', 'e'])[0],
-        'melody_preferred_center': 4,
-        'melody_preferred_lower': randint(2, 5),
-        'melody_preferred_upper': randint(2, 5),
-        'melody_maximum_lower': randint(1, 3),
-        'melody_maximum_upper': randint(1, 3),
+        'melody': {
+            'preferred_range': {
+                'center': 4,
+                'upper_offset': randint(2, 5),
+                'lower_offset': randint(2, 5),
+            },
+            'maximum_range': {
+                'lower_offset': randint(1, 3),
+                'upper_offset': randint(1, 3),
+            },
+        },
     })
     for i in range(16):
         value = randrange(8, 17)
-        conv_params['melody_dynamics_%s' % i] = value
+        conv_params['melody']['dynamics'][i] = value
 
     return conv_params
 
@@ -248,19 +269,27 @@ def sad_params():
     # -4 semitons
     tempo_lower = randint(60, 90)
     conv_params = DEFAULT_PARAMETERS.copy()
-    conv_params.update({
-        'tempo_lower': tempo_lower,
-        'tempo_upper': tempo_lower + randint(10, 30),
+    recursive_update_dict(conv_params, {
+        'tempo': {
+            'lower': tempo_lower,
+            'upper': tempo_lower + randint(10, 30),
+        },
         'key': choice(['e', 'f', 'g', 'a', 'b'])[0],
-        'melody_preferred_center': 3,
-        'melody_preferred_lower': randint(4, 8),
-        'melody_preferred_upper': randint(2, 4),
-        'melody_maximum_lower': randint(2, 4),
-        'melody_maximum_upper': randint(1, 3),
+        'melody': {
+            'preferred_range': {
+                'center': 3,
+                'lower_offset': randint(4, 8),
+                'upper_offset': randint(2, 4),
+            },
+            'maximum_range': {
+                'lower_offset': randint(2, 4),
+                'upper_offset': randint(1, 3),
+            },
+        },
     })
     for i in range(16):
         value = randrange(4, 9)
-        conv_params['melody_dynamics_%s' % i] = value
+        conv_params['melody']['dynamics'][i] = value
 
     return conv_params
 
@@ -272,19 +301,27 @@ def tender_params():
     # +4 semitons
     tempo_lower = randint(60, 80)
     conv_params = DEFAULT_PARAMETERS.copy()
-    conv_params.update({
-        'tempo_lower': tempo_lower,
-        'tempo_upper': tempo_lower + randint(10, 20),
+    recursive_update_dict(conv_params, {
+        'tempo': {
+            'lower': tempo_lower,
+            'upper': tempo_lower + randint(10, 20),
+        },
         'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
-        'melody_preferred_center': 4,
-        'melody_preferred_lower': randint(2, 4),
-        'melody_preferred_upper': randint(4, 8),
-        'melody_maximum_lower': randint(1, 3),
-        'melody_maximum_upper': randint(2, 4),
+        'melody': {
+            'preferred_range': {
+                'center': 4,
+                'lower_offset': randint(2, 4),
+                'upper_offset': randint(4, 8),
+            },
+            'maximum_range': {
+                'lower_offset': randint(1, 3),
+                'upper_offset': randint(2, 4),
+            }
+        }
     })
     for i in range(16):
         value = randrange(1, 7)
-        conv_params['melody_dynamics_%s' % i] = value
+        conv_params['melody']['dynamics'][i] = value
 
     return conv_params
 
@@ -307,7 +344,7 @@ def index(request):
             form = MinstrelForm(tender_params())
 
         if form.is_valid():
-            save_yaml(form.cleaned_data, yaml_file)
+            save_yaml(load_form_data(form.cleaned_data), yaml_file)
             audio_file = compose(request.session)
     else:
         form = MinstrelForm(load_yaml(yaml_file))
@@ -339,27 +376,34 @@ def music(request, session_id, composition_id):
 
     session_id = int(session_id)
     composition_id = int(composition_id)
-    return StreamingHttpResponse(stream_music(session_id, composition_id))
+
+    return StreamingHttpResponse(
+        stream_music(session_id, composition_id),
+        content_type="audio/mpeg"
+    )
 
 
 def new_compose(request):
     audio_file = None
     yaml_file = get_yaml_file(request.session)
+    params = json.loads(request.body)
 
-    if request.method == "POST":
-        mood = request.POST.get('mood')
-        form = MinstrelForm(
-            {
-                'happy': happy_params(),
-                'angry': angry_params(),
-                'sad': sad_params(),
-                'tender': tender_params(),
-            }.get(mood, {})
-        )
+    if params:
+        mood = params.get('mood')
+        instrument = params.get('instrument')
+        data = {
+            'happy': happy_params,
+            'angry': angry_params,
+            'sad': sad_params,
+            'tender': tender_params,
+        }.get(mood, lambda: {})()
+        data['instruments'].update(INSTRUMENTS_GROUPS.get(instrument))
 
-        if form.is_valid():
-            save_yaml(form.cleaned_data, yaml_file)
+        if data:
+            from pprint import pprint; pprint(data)
+            save_yaml(data, yaml_file)
             audio_file = compose(request.session)
+            print "hue2"
 
     return JsonResponse({
         'music_url': audio_file

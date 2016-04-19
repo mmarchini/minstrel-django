@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^music/(?P<session_id>\d{1,50})/(?P<composition_id>\d{1,50})/$', views.music, name='music'),  # NOQA
     url(r'^new_screen/$', views.new_screen, name='new_screen'),  # NOQA
+    url(r'^new_compose/$', views.new_compose, name='new_compose'),  # NOQA
     url(r'^$', views.index, name='index'),
 ]
