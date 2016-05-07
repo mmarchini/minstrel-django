@@ -42,7 +42,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     }
     return  params.instrument && params.mood && params.complexity && params.length;
   }
-  var audio = null;
+  $scope.audio = null;
   $scope.checkParams = checkParams;
   $scope.clickCompose = function() {
     $scope.validate = true;
@@ -52,12 +52,12 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
           var url=data.music_url;
           console.log(url);
           if (url) {
-            if(audio) {
-              audio.stop();
-              audio = null;
+            if($scope.audio) {
+              $scope.audio.stop();
+              $scope.audio = null;
             }
-            audio = ngAudio.load(url)
-            audio.play();
+            $scope.audio = ngAudio.load(url)
+            $scope.audio.play();
           }
         });
     }

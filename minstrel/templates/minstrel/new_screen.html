@@ -89,7 +89,16 @@
             <div class="player">
               <input type="button" name="compose" class="btn btn-primary"
                      value="Compor!" ng-click="clickCompose()"/>
-              <div>{{params}}</div>
+              <div class="player-control">
+                <button ng-click="audio.paused ? audio.play() : audio.pause()"
+                         ng-disabled="!audio">
+                  <span class="fa" ng-class="{'fa-play': audio.paused, 'fa-pause': audio ? !audio.paused : false}"></span>
+                </button>
+                <span ng-class="{'disabled': !audio}" class="player-progress"></span>
+                <div>
+                  {{audio.progress}} | {{audio.currentTime}} | {{audio.remaining}}
+                </div>
+              </div>
             </div>
           </div>
         </div>

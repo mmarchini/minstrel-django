@@ -3,6 +3,38 @@
 .player
   padding: 30px 0px
   text-align: center
+  .player-control
+    padding: 15px 0px
+    color: $blue1
+    width: 100%
+    vertical-align: middle
+    button
+      border: none
+      background: $blue4
+      border-radius: 50%
+      height: 24px
+      width: 24px
+      padding: 0px
+      &:active
+        box-shadow: 1px 1px 4px $darkblue inset
+      &:disabled
+        background: $lightblue2
+    span.fa
+      font-size: 13px
+      cursor: pointer
+      // text-shadow: 0px 0px transparent, 1px 1px #444
+      vertical-align: middle
+    .player-progress
+      vertical-align: middle
+      width: 200px
+      display: inline-block
+      background: $blue1
+      border: 1px solid $blue3
+      height: 8px
+      border-radius: 2px
+      &.disabled
+        background: $lightblue1
+        border: 1px solid $lightblue2
   .btn.btn-primary
     color: white
     background-color: $blue2
