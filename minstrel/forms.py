@@ -163,10 +163,6 @@ class MinstrelForm(forms.Form):
     melody_power = forms.FloatField(
         initial=DEFAULT_PARAMETERS['melody']['power']
     )
-    melody_preferred_center = forms.IntegerField(
-        min_value=1, max_value=9,
-        initial=DEFAULT_PARAMETERS['melody']['preferred_range']['center']
-    )
     melody_preferred_lower = forms.IntegerField(
         min_value=1, max_value=100,
         initial=DEFAULT_PARAMETERS['melody']['preferred_range']['lower_offset']

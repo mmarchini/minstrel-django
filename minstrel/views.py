@@ -13,11 +13,11 @@ from django.shortcuts import render
 
 from popgen.composition import DEFAULT_PARAMETERS
 from popgen import composition, soundfonts
-from popgen.utils import recursive_update_dict
 
 from .forms import MinstrelForm, keys
-from .instruments import INSTRUMENTS, INSTRUMENTS_GROUPS
+from .instruments import INSTRUMENTS
 from . import utils
+from . import parameters
 
 
 def shuffle(x):
@@ -73,7 +73,6 @@ def load_form_data(data):
     # Melody Params
     params['melody']['power'] = data['melody_power']
     params['melody']['preferred_range'] = {
-        'center': data['melody_preferred_center'],
         'lower_offset': data['melody_preferred_lower'],
         'upper_offset': data['melody_preferred_upper'],
     }
@@ -110,8 +109,6 @@ def load_yaml(filename):
         'tempo_fixed': params['tempo'].get('fixed', None),
         'key': params['key'],
         'melody_power': params['melody']['power'],
-        'melody_preferred_center':
-            params['melody']['preferred_range']['center'],
         'melody_preferred_lower':
             params['melody']['preferred_range']['lower_offset'],
         'melody_preferred_upper':
@@ -169,7 +166,6 @@ def random_params():
         'tempo_upper': tempo_lower + randint(1, 120),
         'key': choice(keys)[0],
         'melody_power': randrange(50, 500, 25) / 100.,
-        'melody_preferred_center': randint(2, 4),
         'melody_preferred_lower': randint(2, 8),
         'melody_preferred_upper': randint(2, 8),
         'melody_maximum_lower': randint(1, 6),
@@ -198,134 +194,6 @@ def random_params():
     return conv_params
 
 
-def happy_params():
-    # +10 bpm
-    # Major
-    # +5dB
-    # +4 semitons
-    tempo_lower = randint(90, 120)
-    conv_params = DEFAULT_PARAMETERS.copy()
-    recursive_update_dict(conv_params, {
-        'tempo': {
-            'lower': tempo_lower,
-            'upper': tempo_lower + randint(30, 60),
-        },
-        'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
-        'melody': {
-            'preferred_range': {
-                'center': 4,
-                'upper_offset': randint(4, 8),
-                'lower_offset': randint(2, 4),
-            },
-            'maximum_range': {
-                'upper_offset': randint(2, 4),
-                'lower_offset': randint(1, 3),
-            },
-        },
-    })
-    for i in range(16):
-        value = randrange(5, 14)
-        conv_params['melody']['dynamics'][i] = value
-
-    return conv_params
-
-
-def angry_params():
-    # 10+ bpm
-    # Minor
-    # +7dB
-    # +0 semitons
-    tempo_lower = randint(90, 120)
-    conv_params = DEFAULT_PARAMETERS.copy()
-    recursive_update_dict(conv_params, {
-        'tempo': {
-            'lower': tempo_lower,
-            'upper': tempo_lower + randint(30, 60),
-        },
-        'key': choice(['c', 'c#', 'd', 'd#', 'e'])[0],
-        'melody': {
-            'preferred_range': {
-                'center': 4,
-                'upper_offset': randint(2, 5),
-                'lower_offset': randint(2, 5),
-            },
-            'maximum_range': {
-                'lower_offset': randint(1, 3),
-                'upper_offset': randint(1, 3),
-            },
-        },
-    })
-    for i in range(16):
-        value = randrange(8, 17)
-        conv_params['melody']['dynamics'][i] = value
-
-    return conv_params
-
-
-def sad_params():
-    # -15 bpm
-    # Minor
-    # -5dB
-    # -4 semitons
-    tempo_lower = randint(60, 90)
-    conv_params = DEFAULT_PARAMETERS.copy()
-    recursive_update_dict(conv_params, {
-        'tempo': {
-            'lower': tempo_lower,
-            'upper': tempo_lower + randint(10, 30),
-        },
-        'key': choice(['e', 'f', 'g', 'a', 'b'])[0],
-        'melody': {
-            'preferred_range': {
-                'center': 4,
-                'lower_offset': randint(4, 8),
-                'upper_offset': randint(2, 4),
-            },
-            'maximum_range': {
-                'lower_offset': randint(2, 4),
-                'upper_offset': randint(1, 3),
-            },
-        },
-    })
-    for i in range(16):
-        value = randrange(4, 9)
-        conv_params['melody']['dynamics'][i] = value
-
-    return conv_params
-
-
-def tender_params():
-    # +10 bpm
-    # Major
-    # +5dB
-    # +4 semitons
-    tempo_lower = randint(60, 80)
-    conv_params = DEFAULT_PARAMETERS.copy()
-    recursive_update_dict(conv_params, {
-        'tempo': {
-            'lower': tempo_lower,
-            'upper': tempo_lower + randint(10, 20),
-        },
-        'key': choice(['E', 'F', 'G', 'A', 'B'])[0],
-        'melody': {
-            'preferred_range': {
-                'center': 4,
-                'lower_offset': randint(2, 4),
-                'upper_offset': randint(4, 8),
-            },
-            'maximum_range': {
-                'lower_offset': randint(1, 3),
-                'upper_offset': randint(2, 4),
-            }
-        }
-    })
-    for i in range(16):
-        value = randrange(1, 7)
-        conv_params['melody']['dynamics'][i] = value
-
-    return conv_params
-
-
 def index(request):
     audio_file = None
     yaml_file = get_yaml_file(request.session)
@@ -335,13 +203,13 @@ def index(request):
         elif 'random' in request.POST:
             form = MinstrelForm(random_params())
         elif 'happy' in request.POST:
-            form = MinstrelForm(happy_params())
+            form = MinstrelForm(parameters.moods.happy())
         elif 'angry' in request.POST:
-            form = MinstrelForm(angry_params())
+            form = MinstrelForm(parameters.moods.angry())
         elif 'sad' in request.POST:
-            form = MinstrelForm(sad_params())
+            form = MinstrelForm(parameters.moods.sad())
         elif 'tender' in request.POST:
-            form = MinstrelForm(tender_params())
+            form = MinstrelForm(parameters.moods.tender())
 
         if form.is_valid():
             save_yaml(load_form_data(form.cleaned_data), yaml_file)
@@ -391,13 +259,13 @@ def new_compose(request):
     if params:
         mood = params.get('mood')
         instrument = params.get('instrument')
-        data = {
-            'happy': happy_params,
-            'angry': angry_params,
-            'sad': sad_params,
-            'tender': tender_params,
-        }.get(mood, lambda: {})()
-        data['instruments'].update(INSTRUMENTS_GROUPS.get(instrument))
+        complexity = params.get('complexity')
+        data = DEFAULT_PARAMETERS.copy()
+        data = parameters.complexities.get_complexity(complexity)(data)
+        data = parameters.moods.get_mood(mood)(data)
+        data = parameters.instruments.get_instrument(instrument, mood)(data)
+        from pprint import pprint
+        pprint(data)
 
         if data:
             save_yaml(data, yaml_file)
