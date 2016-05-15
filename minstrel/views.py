@@ -260,17 +260,16 @@ def new_compose(request):
         mood = params.get('mood')
         instrument = params.get('instrument')
         complexity = params.get('complexity')
+        length = params.get('length')
         data = DEFAULT_PARAMETERS.copy()
+        data = parameters.length.get_length(length, complexity)(data)
         data = parameters.complexities.get_complexity(complexity)(data)
         data = parameters.moods.get_mood(mood)(data)
         data = parameters.instruments.get_instrument(instrument, mood)(data)
-        from pprint import pprint
-        pprint(data)
 
         if data:
             save_yaml(data, yaml_file)
             audio_file = compose(request.session)
-            print "hue2"
 
     return JsonResponse({
         'music_url': audio_file
@@ -278,5 +277,4 @@ def new_compose(request):
 
 
 def new_screen(request):
-
     return render(request, 'minstrel/new_screen.html')

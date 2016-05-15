@@ -47,7 +47,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
   $scope.clickCompose = function() {
     $scope.validate = true;
     if(checkParams()) {
-      $http.post('/new_compose/', params).
+      $http.post('/compose/', params).
         success(function(data, status, headers, config){
           var url=data.music_url;
           console.log(url);

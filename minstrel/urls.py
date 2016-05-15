@@ -22,7 +22,7 @@ from . import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^music/(?P<session_id>\d{1,50})/(?P<composition_id>\d{1,50})/$', views.music, name='music'),  # NOQA
-    url(r'^new_screen/$', views.new_screen, name='new_screen'),  # NOQA
-    url(r'^new_compose/$', views.new_compose, name='new_compose'),  # NOQA
-    url(r'^$', views.index, name='index'),
+    url(r'^detailed_composer/$', views.index, name='detailed_composer'),  # NOQA
+    url(r'^compose/$', views.new_compose, name='compose'),  # NOQA
+    url(r'^$', views.new_screen, name='index'),
 ]
