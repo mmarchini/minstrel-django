@@ -8,22 +8,28 @@
     color: $blue1
     width: 100%
     vertical-align: middle
-    button
+    button, a
       border: none
       background: $blue4
       border-radius: 50%
       height: 24px
       width: 24px
       padding: 0px
+      display: inline-block
+      color: $blue1
+      position: relative
+      vertical-align: middle
+      margin: 5px
+      line-height: 24px
       &:active
         box-shadow: 1px 1px 4px $darkblue inset
       &:disabled
         background: $lightblue2
-    span.fa
-      font-size: 13px
-      cursor: pointer
-      // text-shadow: 0px 0px transparent, 1px 1px #444
-      vertical-align: middle
+      span.fa
+        line-height: 12px
+        font-size: 13px
+        cursor: pointer
+        vertical-align: middle
     .player-progress
       vertical-align: middle
       width: 200px

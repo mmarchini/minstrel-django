@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{% static 'sass/image-radio.sass'|compile %}" />
     <link rel="stylesheet" href="{% static 'sass/select-complexity.sass'|compile %}" />
     <link rel="stylesheet" href="{% static 'sass/player.sass'|compile %}" />
+    <link rel="stylesheet" href="{% static 'sass/checkbox.sass'|compile %}" />
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
   </head>
   <body ng-controller="MinstrelCtrl">
@@ -36,6 +37,12 @@
               <image-radio-list ng-repeat="instrument in instruments track by instrument.name"
                                 name="instrument" selected="params.instrument"
                                 value="instrument"/>
+            </div>
+            <div class="text-center percussion-checkbox">
+              <label>
+                <input name="no_percussion" type="checkbox" ng-model="params.no_percussion"/>
+                <span></span> Sem Percussão?
+              </label>
             </div>
           </div>
           <div class="col-md-6">
@@ -91,12 +98,14 @@
                      value="Compor!" ng-click="clickCompose()"/>
               <div class="player-control">
                 <button ng-click="audio.paused ? audio.play() : audio.pause()"
-                         ng-disabled="!audio">
+                         ng-disabled="!audio" role="play">
                   <span class="fa" ng-class="{'fa-play': audio.paused, 'fa-pause': audio ? !audio.paused : false}"></span>
                 </button>
-                <span ng-class="{'disabled': !audio}" class="player-progress"></span>
+                <a ng-disabled="!music_url" ng-href="{{music_url}}" download="Minstrel.mp3">
+                  <span class="fa fa-download"></span>
+                </a>
+                <!-- <span ng-class="{'disabled': !audio}" class="player-progress"></span> -->
                 <div>
-                  {{audio.progress}} | {{audio.currentTime}} | {{audio.remaining}}
                 </div>
               </div>
             </div>

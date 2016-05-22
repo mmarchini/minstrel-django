@@ -43,13 +43,16 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     return  params.instrument && params.mood && params.complexity && params.length;
   }
   $scope.audio = null;
+  $scope.music_url=null;
   $scope.checkParams = checkParams;
   $scope.clickCompose = function() {
     $scope.validate = true;
     if(checkParams()) {
+      $scope.music_url=null;
       $http.post('/compose/', params).
         success(function(data, status, headers, config){
           var url=data.music_url;
+          $scope.music_url = data.music_url;
           console.log(url);
           if (url) {
             if($scope.audio) {
@@ -114,7 +117,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     },
     {
       'name': 'angry',
-      'label': 'Raivoso',
+      'label': 'Irritado',
       'image': '/static/img/moods/angry.png',
     },
     {

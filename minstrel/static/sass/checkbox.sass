@@ -1,0 +1,35 @@
+@import 'base'
+
+.percussion-checkbox
+  margin-top: 20px
+  label
+    cursor: pointer
+    vertical-align: middle
+    input[type=checkbox]
+      display: none
+      + span
+        width: 20px
+        height: 20px
+        display: inline-block
+        background: none
+        border: 2px solid $darkblue3
+        position: relative
+        vertical-align: middle
+        transition: border-color 0.5s ease
+        &::before
+          content: ""
+          font-family: "FontAwesome"
+          color: $orange3
+          position: absolute
+          bottom: -2px
+          left: 0
+          right: 0
+          margin: 0px auto
+          transition: opacity 0.5s ease
+          opacity: 0
+      &:checked + span
+        border: 2px solid $orange3
+        transition: border-color 0.5s ease
+        &::before
+          opacity: 1
+          transition: opacity 0.5s ease

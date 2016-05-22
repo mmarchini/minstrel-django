@@ -33,7 +33,12 @@ def compose(session):
         os.makedirs(current_path)
     yaml_file = os.path.join(current_path, 'params.yaml')
     shutil.copy(session['composition.params'], yaml_file)
-    # compose_task_id = async(compose_task, composition_path, current_time)
+
+    composer = composition.Composer.from_yaml(yaml_file)
+    composer.compose()
+
+    midi_file = os.path.join(current_path, 'minstrel.midi')
+    composer.save(midi_file)
 
     return reverse(
         'music',
@@ -230,12 +235,7 @@ def stream_music(session_id, composition_id):
         str(composition_id),
     )
 
-    yaml_file = os.path.join(current_path, 'params.yaml')
     midi_file = os.path.join(current_path, 'minstrel.midi')
-
-    composer = composition.Composer.from_yaml(yaml_file)
-    composer.compose()
-    composer.save(midi_file)
 
     return utils.stream(midi_file, soundfonts.DEFAULT_SOUNDFONT)
 
@@ -266,6 +266,8 @@ def new_compose(request):
         data = parameters.complexities.get_complexity(complexity)(data)
         data = parameters.moods.get_mood(mood)(data)
         data = parameters.instruments.get_instrument(instrument, mood)(data)
+        if params.get('no_percussion'):
+            data['instruments']['rhythm'] = 'No Percussion'
 
         if data:
             save_yaml(data, yaml_file)
