@@ -16,6 +16,7 @@ h1
 h2
   border-bottom: 1px solid $blue4
   color: $darkblue
+  position: relative
 
 h3
   margin-top: 0px
@@ -27,3 +28,20 @@ h4.validation
 
 h4.hide
   visibility: hidden
+
+span.info
+  background: darken($blue1, 5%) none repeat scroll 0 0
+  border: 1px solid darken($blue1, 15%)
+  color: lighten($darkblue, 5%)
+  border-radius: 50%
+  bottom: 4px
+  cursor: pointer
+  font-size: 13px
+  height: 23px
+  padding-top: 4px
+  position: absolute
+  right: 10px
+  width: 23px
+
+tooltip tip.param-tip
+  min-width: 300px

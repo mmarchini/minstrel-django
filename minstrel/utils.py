@@ -192,7 +192,6 @@ def stream(midifile, sffile):
     delete_fluid_player(player)
     delete_fluid_synth(synth)
     delete_fluid_settings(settings)
-    print "Streamed"
 
 
 def get_hash():
