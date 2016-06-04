@@ -13,7 +13,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+dotdot = os.path.dirname
+BASE_DIR = dotdot(dotdot(dotdot(os.path.abspath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
@@ -21,12 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '$ht8sw)0ouh)=-vt@rfwn@o4a*jsy4woqae$tbo8d-9s8w*myv'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -39,7 +34,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'minstrel',
     'crispy_forms',
-    'django_q',
     'djng',
     'static_precompiler',
 ]
@@ -106,15 +100,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-Q_CLUSTER = {
-    'name': 'DjangORM',
-    'workers': 4,
-    'timeout': 90,
-    'retry': 120,
-    'queue_limit': 50,
-    'bulk': 10,
-    'orm': 'default'
-}
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
