@@ -42,6 +42,15 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     }
     return  params.instrument && params.mood && params.complexity && params.length;
   }
+  function composing(isComposing) {
+    $scope.composing = isComposing;
+    if(isComposing) {
+      $scope.composeButtonLabel = "<i class='fa fa-refresh fa-spin'></i>";
+    } else {
+      $scope.composeButtonLabel = "Compor!";
+    }
+  }
+  composing(false);
   $scope.audio = null;
   $scope.music_url=null;
   $scope.checkParams = checkParams;
@@ -49,11 +58,11 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     $scope.validate = true;
     if(checkParams()) {
       $scope.music_url=null;
+      composing(true);
       $http.post('/compose/', params).
         success(function(data, status, headers, config){
           var url=data.music_url;
           $scope.music_url = data.music_url;
-          console.log(url);
           if (url) {
             if($scope.audio) {
               $scope.audio.stop();
@@ -61,7 +70,10 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
             }
             $scope.audio = ngAudio.load(url)
             $scope.audio.play();
+            composing(false);
           }
+        }).error(function(){
+          composing(false);
         });
     }
     // return checkParams();

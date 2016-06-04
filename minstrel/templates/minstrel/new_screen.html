@@ -123,16 +123,24 @@
         <div class="row">
           <div class="col-md-12">
             <div class="player">
-              <input type="button" name="compose" class="btn btn-primary"
-                     value="Compor!" ng-click="clickCompose()"/>
+              <div>
+                <button type="button" name="compose" class="btn btn-primary btn-compose"
+                        ng-click="clickCompose()" ng-disabled="composing">
+                  <span ng-if="!composing">
+                    Compor!
+                  </span>
+                  <span ng-if="composing" class="fa fa-refresh fa-spin">
+                  </span>
+                </button>
+                <div ng-if="composing">
+                  Estamos compondo a sua música e em alguns segundos ela será reproduzida pelo seu navegador!
+                </div>
+              </div>
               <div class="player-control">
                 <button ng-click="audio.paused ? audio.play() : audio.pause()"
                          ng-disabled="!audio" role="play">
                   <span class="fa" ng-class="{'fa-play': audio.paused, 'fa-pause': audio ? !audio.paused : false}"></span>
                 </button>
-                <a ng-disabled="!music_url" ng-href="{{music_url}}" download="Minstrel.mp3">
-                  <span class="fa fa-download"></span>
-                </a>
                 <!-- <span ng-class="{'disabled': !audio}" class="player-progress"></span> -->
                 <div>
                 </div>
