@@ -21,7 +21,7 @@ from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^music/(?P<session_id>)/(?P<composition_id>\d{1,50})/$', views.music, name='music'),  # NOQA
+    url(r'^music/(?P<session_id>[a-zA-Z0-9]{1,50})/(?P<composition_id>\d{1,50})/$', views.music, name='music'),  # NOQA
     url(r'^detailed_composer/$', views.index, name='detailed_composer'),  # NOQA
     url(r'^set_csrf/$', views.set_csrf, name='set_csrf'),  # NOQA
     url(r'^compose/$', views.new_compose, name='compose'),  # NOQA

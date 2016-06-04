@@ -244,7 +244,7 @@ def stream_music(session_id, composition_id):
 
 def music(request, session_id, composition_id):
 
-    session_id = int(session_id)
+    session_id = session_id
     composition_id = int(composition_id)
 
     return StreamingHttpResponse(
