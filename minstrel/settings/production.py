@@ -5,7 +5,7 @@ DEBUG=False
 
 ALLOWED_HOSTS = ["minstrel.me", "www.minstrel.me"]
 
-ADMINS = [("Matheus Marchini", "matheus+minstrel@gmail.com")]
+ADMINS = [("Matheus Marchini", "matheusdot+minstrel@gmail.com")]
 # MANAGERS = [("Matheus Marchini", "matheus+minstrel@gmail.com")]
 
 EMAIL_HOST = 'smtp.sendgrid.net'
