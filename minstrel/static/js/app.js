@@ -195,4 +195,5 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     "Quanto maior a complexidade, menos repetições irão ocorrer, bem como menos notas com duração longa e menos intervalos de silêncio.";
   $scope.lengthsPopover =  "<b>Duração</b><br>" +
     "Afeta a duração da composição. A duração final é determinada pela combinação desse parâmetro com a <i>Emoção</i> selecionada.";
+  $http.get("/set_csrf/");
 });

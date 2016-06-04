@@ -144,13 +144,14 @@ def load_yaml(filename):
 
 
 def get_yaml_file(session):
-    current_time = time()
-    session_path = 'minstrel/static/tmp/%d' % current_time
+    session_id = session._get_or_create_session_key()
+    session_path = 'minstrel/static/tmp/%s' % session_id
     session_path = session.get('composition.path', session_path)
     if not os.path.exists(session_path):
         os.makedirs(session_path)
         session['composition.path'] = session_path
-        session['composition.identifier'] = int(current_time)
+        session['composition.identifier'] = session_id
+    print session_path
 
     yaml_file = os.path.join(session_path, 'current_params.yaml')
     if not os.path.exists(session.get('composition.params', yaml_file)):
@@ -158,6 +159,7 @@ def get_yaml_file(session):
             params = DEFAULT_PARAMETERS.copy()
             yaml.safe_dump(params, file_, default_flow_style=False)
             session['composition.params'] = yaml_file
+    print yaml_file
 
     return session['composition.params']
 
@@ -276,6 +278,10 @@ def new_compose(request):
     return JsonResponse({
         'music_url': audio_file
     })
+
+
+def set_csrf(request):
+    return JsonResponse({})
 
 
 def new_screen(request):
