@@ -27,7 +27,7 @@ def shuffle(x):
 def compose(session):
     composition_path = session['composition.path']
 
-    current_time = int(time())
+    current_time = int(time() * 1000000)
     current_path = os.path.join(composition_path, "%d" % current_time)
     if not os.path.exists(current_path):
         os.makedirs(current_path)
