@@ -98,37 +98,40 @@ def motherfucker(settings, synth, player):
     period_size = c_int(0)
     fluid_settings_getint(settings, 'audio.period-size', byref(period_size))
     period_size = period_size.value
-    proc = sp.Popen([FFMPEG_BIN, '-y', "-f", 's16le', '-ar', "44100",
-                     '-ac', '2', '-i', '-', '-vn', '-f', 'mp3', '-ac', '2',
-                     'pipe:1'],
-                    stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
-    fcntl.fcntl(proc.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
-    buff = (c_int16 * (period_size * 2))()
-    while (fluid_player_get_status(player) == FLUID_PLAYER_PLAYING):
-        r = fluid_synth_write_s16(
-            synth,
-            period_size,
-            cast(buff, POINTER(c_int16)),
-            0,
-            2,
-            cast(buff, POINTER(c_int16)),
-            1,
-            2
-        )
-        proc.stdin.write(buff)
-        try:
-            yield proc.stdout.read()
-        except IOError:
-            pass
-        if (r != 0):
-            print("Oh, that's embarassing...")
-            break
-    proc.stdin.close()
-    while proc.poll():
-        try:
-            yield proc.stdout.read()
-        except IOError:
-            pass
+    try:
+        proc = sp.Popen([FFMPEG_BIN, '-y', "-f", 's16le', '-ar', "44100",
+                         '-ac', '2', '-i', '-', '-vn', '-f', 'mp3', '-ac', '2',
+                         'pipe:1'],
+                        stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+        fcntl.fcntl(proc.stdout.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
+        buff = (c_int16 * (period_size * 2))()
+        while (fluid_player_get_status(player) == FLUID_PLAYER_PLAYING):
+            r = fluid_synth_write_s16(
+                synth,
+                period_size,
+                cast(buff, POINTER(c_int16)),
+                0,
+                2,
+                cast(buff, POINTER(c_int16)),
+                1,
+                2
+            )
+            proc.stdin.write(buff)
+            try:
+                yield proc.stdout.read()
+            except IOError:
+                pass
+            if (r != 0):
+                print("Oh, that's embarassing...")
+                break
+        proc.stdin.close()
+        while proc.poll():
+            try:
+                yield proc.stdout.read()
+            except IOError:
+                pass
+    except:
+        proc.kill()
 
 
 def fast_render_loop(settings, synth, player):
