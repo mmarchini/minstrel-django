@@ -41,7 +41,7 @@ INSTRUMENTS = {
             'instruments': {
                 'melody': 'Alto Sax',
                 'chord': 'Electric Guitar (jazz)',
-                'bass': 'Baritone Sax',
+                'bass': 'Electric Bass (finger)',
                 'rhythm': "Jazz Percussion",
             },
         },
@@ -56,7 +56,7 @@ INSTRUMENTS = {
         'tender': {
             'instruments': {
                 'melody': 'Trumpet',
-                'chord': 'Electric Grand Piano',
+                'chord': 'Bright Acoustic Piano',
                 'bass': 'Cello',
                 'rhythm': "Jazz Percussion",
             },
@@ -65,7 +65,7 @@ INSTRUMENTS = {
             'instruments': {
                 'melody': 'Tenor Sax',
                 'chord': 'Electric Guitar (jazz)',
-                'bass': 'Soprano Sax',
+                'bass': 'Contrabass',
                 'rhythm': "Jazz Percussion",
             },
         },
@@ -75,21 +75,21 @@ INSTRUMENTS = {
             'instruments': {
                 'melody': 'Violin',
                 'chord': 'Viola',
-                'bass': 'Pizzicato Strings',
+                'bass': 'Contrabass',
                 'rhythm': "Orchestra Percussion",
             },
         },
         'sad': {
             'instruments': {
-                'melody': 'Orchestral Harp',
-                'chord': 'Cello',
-                'bass': 'Contrabass',
+                'melody': 'Acoustic Grand Piano',
+                'chord': 'Viola',
+                'bass': 'Cello',
                 'rhythm': "Orchestra Percussion",
             },
         },
         'tender': {
             'instruments': {
-                'melody': 'Orchestral Harp',
+                'melody': 'Violin',
                 'chord': 'Viola',
                 'bass': 'Contrabass',
                 'rhythm': "Orchestra Percussion",
@@ -98,8 +98,8 @@ INSTRUMENTS = {
         'angry': {
             'instruments': {
                 'melody': 'Violin',
-                'chord': 'Cello',
-                'bass': 'Pizzicato Strings',
+                'chord': 'Viola',
+                'bass': 'Cello',
                 'rhythm': "Orchestra Percussion",
             },
         },
@@ -165,7 +165,7 @@ INSTRUMENTS = {
         },
         'angry': {
             'instruments': {
-                'melody': 'Pad3 (polysynth)',
+                'melody': 'Distortion Guitar',
                 'chord': 'Overdriven Guitar',
                 'bass': 'Slap Bass 2',
                 'rhythm': "Rock Percussion",
@@ -184,23 +184,23 @@ INSTRUMENTS = {
         'sad': {
             'instruments': {
                 'melody': 'Lead1 (square)',
-                'chord': 'Lead6 (voice)',
+                'chord': 'Pad4 (choir)',
                 'bass': 'Synth Voice',
                 'rhythm': "Synth Percussion",
             },
         },
         'tender': {
             'instruments': {
-                'melody': 'FX1 (rain)',
-                'chord': 'Pad4 (choir)',
+                'melody': 'Lead8 (bass + lead)',
+                'chord': 'Pad3 (polysynth)',
                 'bass': 'Pad7 (halo)',
                 'rhythm': "Synth Percussion",
             },
         },
         'angry': {
             'instruments': {
-                'melody': 'Pad3 (polysynth)',
-                'chord': 'FX 7 (echoes)',
+                'melody': 'FX 7 (echoes)',
+                'chord': 'Pad3 (polysynth)',
                 'bass': 'Lead3 (calliope)',
                 'rhythm': "Synth Percussion",
             },
