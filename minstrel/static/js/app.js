@@ -196,14 +196,14 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
   ];
 
   $scope.instrumentsPopover =  "<b>Conjunto de Instrumentos</b><br>" +
-    "Determina o Conjunto de Instrumentos que serão utilizados na música. " +
+    "Determina o Conjunto de Instrumentos que será utilizado na música. " +
     "Dentro de cada Conjunto, os instrumentos utilizados serão determinados pela <i>Emoção</i> escolhida.<br><br>" +
     "Caso a opção \"<b>Sem Percussão?</b>\" seja marcada, a música gerada omitirá o instrumento de Percussão.";
   $scope.moodsPopover =  "<b>Emoção</b><br>" +
     "Dentre as características que ela altera, estão os instrumentos selecionados dentro do <i>Conjunto</i> escolhido, " +
     "a velocidade de execução da composição e outras características que fazem com que uma composição transmita uma certa Emoção.";
   $scope.complexitiesPopover =  "<b>Complexidade</b><br>" +
-    "Afeta a quantidade de repetições e quais notas poderão aparecer na compsoição. " +
+    "Afeta a quantidade de repetições e quais notas poderão aparecer na composição. " +
     "Quanto maior a complexidade, menos repetições irão ocorrer e uma maior variedade de notas poderá aparecer na composição.";
   $scope.lengthsPopover =  "<b>Duração</b><br>" +
     "Afeta a duração da composição. A duração final é determinada pela combinação desse parâmetro com a <i>Emoção</i> selecionada.";
