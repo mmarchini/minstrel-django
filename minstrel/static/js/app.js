@@ -85,7 +85,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
   $scope.instruments = [
     {
       'name': 'acoustic',
-      'label': 'Aucústico',
+      'label': 'Acústico',
       'image': '/static/img/instruments/acoustic.png',
     },
     {
@@ -200,11 +200,11 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     "Dentro de cada Conjunto, os instrumentos utilizados serão determinados pela <i>Emoção</i> escolhida.<br><br>" +
     "Caso a opção \"<b>Sem Percussão</b>\" seja marcada, a música gerada omitirá o instrumento de Percussão.";
   $scope.moodsPopover =  "<b>Emoção</b><br>" +
-    "Dentre as características que ela altera, estão os instrumentos selecionados dentro do <i>Conjunto</i> escolhido, " +
+    "Dentre as características que este parâmetro altera, estão os instrumentos selecionados dentro do <i>Conjunto</i> escolhido, " +
     "a velocidade de execução da composição e outras características que fazem com que uma composição transmita uma certa Emoção.";
   $scope.complexitiesPopover =  "<b>Complexidade</b><br>" +
     "Afeta a quantidade de repetições e quais notas poderão aparecer na composição. " +
-    "Quanto maior a complexidade, menos repetições irão ocorrer e uma maior variedade de notas poderá aparecer na composição.";
+    "Quanto maior a complexidade, menos repetições ocorrerão e uma maior variedade de notas poderá aparecer na composição.";
   $scope.lengthsPopover =  "<b>Duração</b><br>" +
     "Afeta a duração da composição. A duração final é determinada pela combinação desse parâmetro com a <i>Emoção</i> selecionada.";
   $http.get("/set_csrf/");
