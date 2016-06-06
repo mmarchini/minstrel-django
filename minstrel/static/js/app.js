@@ -198,7 +198,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
   $scope.instrumentsPopover =  "<b>Conjunto de Instrumentos</b><br>" +
     "Determina o Conjunto de Instrumentos que será utilizado na música. " +
     "Dentro de cada Conjunto, os instrumentos utilizados serão determinados pela <i>Emoção</i> escolhida.<br><br>" +
-    "Caso a opção \"<b>Sem Percussão?</b>\" seja marcada, a música gerada omitirá o instrumento de Percussão.";
+    "Caso a opção \"<b>Sem Percussão</b>\" seja marcada, a música gerada omitirá o instrumento de Percussão.";
   $scope.moodsPopover =  "<b>Emoção</b><br>" +
     "Dentre as características que ela altera, estão os instrumentos selecionados dentro do <i>Conjunto</i> escolhido, " +
     "a velocidade de execução da composição e outras características que fazem com que uma composição transmita uma certa Emoção.";
