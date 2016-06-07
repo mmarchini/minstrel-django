@@ -110,7 +110,7 @@ App.controller('MinstrelCtrl', function($scope, $http, ngAudio) {
     },
     {
       'name': 'techno',
-      'label': 'Techno',
+      'label': 'Eletrônico',
       'image': '/static/img/instruments/techno.png',
     },
   ];
